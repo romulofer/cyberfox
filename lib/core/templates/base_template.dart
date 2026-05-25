@@ -27,19 +27,11 @@ String buildProjectTemplate(ProjectConfig config) {
     b.writeln();
     b.writeln('## Setup Commands');
     b.writeln();
-    b.writeln('```bash');
-    for (int i = 0; i < config.setupCommands.length; i++) {
-      final cmd = config.setupCommands[i];
-      if (cmd.description.isNotEmpty) b.writeln('# ${cmd.description}');
-      final isLast = i == config.setupCommands.length - 1;
-      if (isLast) {
-        b.write(cmd.command);
-      } else {
-        b.writeln('${cmd.command}\n');
-      }
+    b.writeln('| Command | Description |');
+    b.writeln('|---------|-------------|');
+    for (final cmd in config.setupCommands) {
+      b.writeln('| `${cmd.command}` | ${cmd.description} |');
     }
-    b.writeln();
-    b.write('```');
   }
 
   // Core Features

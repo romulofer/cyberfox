@@ -15,7 +15,7 @@ Instead of writing project context files by hand for each AI tool, Cyberfox lets
 - **Live split-pane preview** — markdown updates in real-time as you type, no generate button required
 - **7 supported AI agents** — each with its canonical output filename
 - **Tech Stack table** — category, technology and version/notes columns
-- **Setup Commands** — command + description, rendered as a `bash` code block with comments
+- **Setup Commands** — command + description, rendered as a table
 - **Core Features** — bullet list of main functionalities
 - **Acceptance Criteria** — bullet list of done conditions
 - **What Not To Do** — bullet list of prohibitions and anti-patterns
@@ -94,7 +94,7 @@ Em vez de escrever manualmente arquivos de contexto para cada ferramenta de IA, 
 - **Preview em tempo real** — o markdown atualiza enquanto você digita, sem botão de gerar
 - **7 agentes de IA suportados** — cada um com seu nome de arquivo canônico
 - **Tabela de Tech Stack** — colunas de categoria, tecnologia e versão/notas
-- **Comandos de Setup** — comando + descrição, renderizados como bloco `bash` com comentários
+- **Comandos de Setup** — comando + descrição, renderizados como tabela
 - **Funcionalidades Principais** — lista de bullet das principais funções
 - **Critérios de Aceite** — lista de bullet das condições de conclusão
 - **O Que Não Fazer** — lista de bullet de proibições e anti-padrões
