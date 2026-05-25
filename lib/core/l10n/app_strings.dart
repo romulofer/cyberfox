@@ -51,6 +51,12 @@ class AppStrings {
   final String fieldDocUrl;
   final String fieldDocDescriptionOptional;
 
+  // Clear entries dialog
+  final String clearDialogTitle;
+  final String clearDialogContent;
+  final String clearDialogConfirm;
+  final String clearDialogCancel;
+
   // Settings page
   final String settingsTitle;
   final String settingsLanguage;
@@ -94,6 +100,10 @@ class AppStrings {
     required this.fieldDocTitle,
     required this.fieldDocUrl,
     required this.fieldDocDescriptionOptional,
+    required this.clearDialogTitle,
+    required this.clearDialogContent,
+    required this.clearDialogConfirm,
+    required this.clearDialogCancel,
     required this.settingsTitle,
     required this.settingsLanguage,
     required this.languagePtBR,
@@ -138,6 +148,11 @@ class AppStrings {
     fieldDocTitle: 'Título',
     fieldDocUrl: 'URL',
     fieldDocDescriptionOptional: 'Descrição (opcional)',
+    clearDialogTitle: 'Limpar entradas?',
+    clearDialogContent:
+        'Deseja limpar todos os campos para começar um novo arquivo?',
+    clearDialogConfirm: 'Limpar',
+    clearDialogCancel: 'Manter',
     settingsTitle: 'Configurações',
     settingsLanguage: 'Idioma',
     languagePtBR: 'Português (Brasil)',
@@ -182,6 +197,11 @@ class AppStrings {
     fieldDocTitle: 'Title',
     fieldDocUrl: 'URL',
     fieldDocDescriptionOptional: 'Description (optional)',
+    clearDialogTitle: 'Clear entries?',
+    clearDialogContent:
+        'Do you want to clear all fields to start a new file?',
+    clearDialogConfirm: 'Clear',
+    clearDialogCancel: 'Keep',
     settingsTitle: 'Settings',
     settingsLanguage: 'Language',
     languagePtBR: 'Português (Brasil)',

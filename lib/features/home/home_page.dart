@@ -74,6 +74,28 @@ class _HomePageState extends State<HomePage> {
 
   void _onChanged() => setState(() {});
 
+  void _clearAll() {
+    setState(() {
+      _projectController.clear();
+      _descriptionController.clear();
+      _selectedAi = aiTargets.first;
+      _techStack.clear();
+      _techCategoryController.clear();
+      _techNameController.clear();
+      _techVersionController.clear();
+      _setupCommands.clear();
+      _commandController.clear();
+      _commandDescriptionController.clear();
+      _coreFeatures.clear();
+      _acceptanceCriteria.clear();
+      _whatNotToDo.clear();
+      _docs.clear();
+      _docTitleController.clear();
+      _docUrlController.clear();
+      _docDescriptionController.clear();
+    });
+  }
+
   ProjectConfig get _config => ProjectConfig(
         projectName: _projectController.text,
         description: _descriptionController.text,
@@ -153,6 +175,29 @@ class _HomePageState extends State<HomePage> {
           duration: const Duration(seconds: 4),
         ),
       );
+
+      if (!mounted) return;
+      final shouldClear = await showDialog<bool>(
+        context: context,
+        builder: (ctx) {
+          final ds = AppSettingsScope.stringsOf(ctx);
+          return AlertDialog(
+            title: Text(ds.clearDialogTitle),
+            content: Text(ds.clearDialogContent),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: Text(ds.clearDialogCancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                child: Text(ds.clearDialogConfirm),
+              ),
+            ],
+          );
+        },
+      );
+      if (shouldClear == true) _clearAll();
     } catch (e) {
       if (!mounted) return;
       final s2 = AppSettingsScope.stringsOf(context);
