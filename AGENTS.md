@@ -25,6 +25,9 @@ Cyberfox is a desktop-first Flutter application that generates markdown context 
 ## Project Structure
 
 ```
+.github/
+└── workflows/
+    └── release.yml                # CI: builds Linux + Windows + macOS on tag push; attaches binaries to GitHub Release
 lib/
 ├── main.dart                      # App entry point; mounts AppSettingsScope + MaterialApp
 ├── core/
@@ -74,6 +77,18 @@ lib/
 | Devin | `AGENTS.md` |
 
 To add a new built-in agent, append an `AiTarget` entry to the `aiTargets` list in `lib/core/models/ai_target.dart`. Users can also add session-scoped custom agents at runtime via the Settings page (Custom Agents section).
+
+## CI / Release
+
+`.github/workflows/release.yml` triggers on any `v*` tag push and runs three parallel jobs — one each on `ubuntu-latest`, `windows-latest`, and `macos-latest`. Each job:
+
+1. Checks out the repo and installs Flutter (beta channel) via `subosito/flutter-action`.
+2. Runs `flutter build <platform> --release`.
+3. Copies the platform binary to a named asset (`cyberfox-linux`, `cyberfox-windows.exe`, `cyberfox-macos`) and uploads it as a GitHub Actions artifact.
+
+A final `release` job downloads all three artifacts and attaches them to the GitHub Release using `softprops/action-gh-release`.
+
+To publish a new release: `git tag vX.Y.Z && git push github vX.Y.Z`.
 
 ## Architecture Notes
 

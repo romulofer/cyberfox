@@ -35,6 +35,16 @@ Instead of writing project context files by hand for each AI tool, Cyberfox lets
 | Aider | `CONVENTIONS.md` |
 | Devin | `AGENTS.md` |
 
+### Download
+
+Pre-built binaries for Linux, Windows and macOS are attached to every [GitHub Release](https://github.com/romulofer/cyberfox/releases):
+
+| Platform | File |
+|----------|------|
+| Linux | `cyberfox-linux` |
+| Windows | `cyberfox-windows.exe` |
+| macOS | `cyberfox-macos` |
+
 ### Requirements
 
 - Flutter 3.x (beta channel)
@@ -114,6 +124,16 @@ Em vez de escrever manualmente arquivos de contexto para cada ferramenta de IA, 
 | GitHub Copilot | `copilot-instructions.md` |
 | Aider | `CONVENTIONS.md` |
 | Devin | `AGENTS.md` |
+
+### Download
+
+Binários pré-compilados para Linux, Windows e macOS estão disponíveis em cada [GitHub Release](https://github.com/romulofer/cyberfox/releases):
+
+| Plataforma | Arquivo |
+|------------|---------|
+| Linux | `cyberfox-linux` |
+| Windows | `cyberfox-windows.exe` |
+| macOS | `cyberfox-macos` |
 
 ### Requisitos
 
