@@ -28,6 +28,15 @@ class _HomePageState extends State<HomePage> {
   final _descriptionController = TextEditingController();
   AiTarget _selectedAi = aiTargets.first;
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final all = AppSettingsScope.of(context).allAgents;
+    if (!all.contains(_selectedAi)) {
+      _selectedAi = all.first;
+    }
+  }
+
   // Tech stack
   final _techCategoryController = TextEditingController();
   final _techNameController = TextEditingController();
@@ -108,7 +117,7 @@ class _HomePageState extends State<HomePage> {
         documentationReferences: _docs,
       );
 
-  String get _markdown => MarkdownGenerator().generate(_config);
+  String _markdown(AppStrings s) => MarkdownGenerator().generate(_config, s);
 
   void _addTechEntry() {
     if (_techCategoryController.text.isEmpty ||
@@ -166,7 +175,7 @@ class _HomePageState extends State<HomePage> {
 
       final filename = _selectedAi.filename;
       final file = File('$directory/$filename');
-      await file.writeAsString(_markdown, encoding: utf8);
+      await file.writeAsString(_markdown(s), encoding: utf8);
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -266,6 +275,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildFormPanel(AppStrings s) {
+    final allAgents = AppSettingsScope.of(context).allAgents;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -301,7 +312,7 @@ class _HomePageState extends State<HomePage> {
               value: _selectedAi,
               isExpanded: true,
               underline: const SizedBox.shrink(),
-              items: aiTargets
+              items: allAgents
                   .map((ai) => DropdownMenuItem(
                         value: ai,
                         child: Text('${ai.name}  —  ${ai.filename}'),
@@ -485,7 +496,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildPreviewPanel(AppStrings s) {
-    final markdown = _markdown;
+    final markdown = _markdown(s);
     final colorScheme = Theme.of(context).colorScheme;
 
     if (markdown.trim().isEmpty) {

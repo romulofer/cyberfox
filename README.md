@@ -13,7 +13,8 @@ Instead of writing project context files by hand for each AI tool, Cyberfox lets
 ### Features
 
 - **Live split-pane preview** — markdown updates in real-time as you type, no generate button required
-- **7 supported AI agents** — each with its canonical output filename
+- **7 built-in AI agents** — each with its canonical output filename
+- **Custom agents** — add your own agents (name + filename) via Settings
 - **Tech Stack table** — category, technology and version/notes columns
 - **Setup Commands** — command + description, rendered as a table
 - **Core Features** — bullet list of main functionalities
@@ -55,7 +56,7 @@ flutter run -d linux     # or -d macos / -d windows
 2. Add entries to **Tech Stack**, **Setup Commands**, and the remaining sections as needed
 3. Watch the **live preview** on the right panel update as you type
 4. Click **Save \<filename\>** in the toolbar, choose a folder, and the file is written with the correct name for your selected agent
-5. To change the UI language, open **Settings** (gear icon in the top-right corner)
+5. To change the UI language or add custom agents, open **Settings** (gear icon in the top-right corner)
 
 ### Project Structure
 
@@ -92,7 +93,8 @@ Em vez de escrever manualmente arquivos de contexto para cada ferramenta de IA, 
 ### Funcionalidades
 
 - **Preview em tempo real** — o markdown atualiza enquanto você digita, sem botão de gerar
-- **7 agentes de IA suportados** — cada um com seu nome de arquivo canônico
+- **7 agentes de IA integrados** — cada um com seu nome de arquivo canônico
+- **Agentes personalizados** — adicione seus próprios agentes (nome + nome do arquivo) em Configurações
 - **Tabela de Tech Stack** — colunas de categoria, tecnologia e versão/notas
 - **Comandos de Setup** — comando + descrição, renderizados como tabela
 - **Funcionalidades Principais** — lista de bullet das principais funções
@@ -134,7 +136,7 @@ flutter run -d linux     # ou -d macos / -d windows
 2. Adicione entradas em **Tech Stack**, **Comandos de Setup** e demais seções conforme necessário
 3. Acompanhe o **preview em tempo real** no painel direito enquanto preenche
 4. Clique em **Salvar \<nome-do-arquivo\>** na barra de ferramentas, escolha uma pasta e o arquivo é salvo com o nome correto para o agente selecionado
-5. Para alterar o idioma da interface, abra **Configurações** (ícone de engrenagem no canto superior direito)
+5. Para alterar o idioma da interface ou adicionar agentes personalizados, abra **Configurações** (ícone de engrenagem no canto superior direito)
 
 ### Estrutura do Projeto
 

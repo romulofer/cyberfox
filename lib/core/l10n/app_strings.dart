@@ -57,11 +57,32 @@ class AppStrings {
   final String clearDialogConfirm;
   final String clearDialogCancel;
 
-  // Settings page
+  // Settings page — language
   final String settingsTitle;
   final String settingsLanguage;
   final String languagePtBR;
   final String languageEn;
+
+  // Generated markdown headings
+  final String mdProjectOverview;
+  final String mdTechStack;
+  final String mdTechCategory;
+  final String mdTechTechnology;
+  final String mdTechVersionNotes;
+  final String mdSetupCommands;
+  final String mdSetupCommand;
+  final String mdSetupDescription;
+  final String mdCoreFeatures;
+  final String mdAcceptanceCriteria;
+  final String mdWhatNotToDo;
+  final String mdDocumentationReferences;
+
+  // Settings page — custom agents
+  final String sectionCustomAgents;
+  final String fieldAgentName;
+  final String hintAgentName;
+  final String fieldAgentFilename;
+  final String hintAgentFilename;
 
   AppStrings._({
     required this.saving,
@@ -108,6 +129,23 @@ class AppStrings {
     required this.settingsLanguage,
     required this.languagePtBR,
     required this.languageEn,
+    required this.mdProjectOverview,
+    required this.mdTechStack,
+    required this.mdTechCategory,
+    required this.mdTechTechnology,
+    required this.mdTechVersionNotes,
+    required this.mdSetupCommands,
+    required this.mdSetupCommand,
+    required this.mdSetupDescription,
+    required this.mdCoreFeatures,
+    required this.mdAcceptanceCriteria,
+    required this.mdWhatNotToDo,
+    required this.mdDocumentationReferences,
+    required this.sectionCustomAgents,
+    required this.fieldAgentName,
+    required this.hintAgentName,
+    required this.fieldAgentFilename,
+    required this.hintAgentFilename,
   });
 
   static final ptBR = AppStrings._(
@@ -157,6 +195,23 @@ class AppStrings {
     settingsLanguage: 'Idioma',
     languagePtBR: 'Português (Brasil)',
     languageEn: 'English',
+    mdProjectOverview: 'Visão Geral do Projeto',
+    mdTechStack: 'Tech Stack',
+    mdTechCategory: 'Categoria',
+    mdTechTechnology: 'Tecnologia',
+    mdTechVersionNotes: 'Versão / Notas',
+    mdSetupCommands: 'Comandos de Setup',
+    mdSetupCommand: 'Comando',
+    mdSetupDescription: 'Descrição',
+    mdCoreFeatures: 'Funcionalidades Principais',
+    mdAcceptanceCriteria: 'Critérios de Aceite',
+    mdWhatNotToDo: 'O Que Não Fazer',
+    mdDocumentationReferences: 'Documentações de Referência',
+    sectionCustomAgents: 'Agentes Personalizados',
+    fieldAgentName: 'Nome do agente',
+    hintAgentName: 'Meu Agente',
+    fieldAgentFilename: 'Nome do arquivo',
+    hintAgentFilename: 'MEUAGENTE.md',
   );
 
   static final en = AppStrings._(
@@ -206,5 +261,22 @@ class AppStrings {
     settingsLanguage: 'Language',
     languagePtBR: 'Português (Brasil)',
     languageEn: 'English',
+    mdProjectOverview: 'Project Overview',
+    mdTechStack: 'Tech Stack',
+    mdTechCategory: 'Category',
+    mdTechTechnology: 'Technology',
+    mdTechVersionNotes: 'Version / Notes',
+    mdSetupCommands: 'Setup Commands',
+    mdSetupCommand: 'Command',
+    mdSetupDescription: 'Description',
+    mdCoreFeatures: 'Core Features',
+    mdAcceptanceCriteria: 'Acceptance Criteria',
+    mdWhatNotToDo: 'What Not To Do',
+    mdDocumentationReferences: 'Documentation References',
+    sectionCustomAgents: 'Custom Agents',
+    fieldAgentName: 'Agent name',
+    hintAgentName: 'My Agent',
+    fieldAgentFilename: 'Filename',
+    hintAgentFilename: 'MYAGENT.md',
   );
 }

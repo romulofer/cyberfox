@@ -52,7 +52,8 @@ lib/
 ## Core Features
 
 - Live split-pane preview: markdown re-renders on every keystroke, no button required
-- 7 supported AI agents, each mapped to its canonical output filename
+- 7 built-in AI agents, each mapped to its canonical output filename
+- Custom agents: users can define additional agents (name + filename) in Settings
 - Tech Stack table (category / technology / version-notes)
 - Setup Commands table (command / description)
 - Core Features, Acceptance Criteria, and What Not To Do bullet lists
@@ -72,11 +73,11 @@ lib/
 | Aider | `CONVENTIONS.md` |
 | Devin | `AGENTS.md` |
 
-To add a new agent, append an `AiTarget` entry to the `aiTargets` list in `lib/core/models/ai_target.dart`. No other change is needed.
+To add a new built-in agent, append an `AiTarget` entry to the `aiTargets` list in `lib/core/models/ai_target.dart`. Users can also add session-scoped custom agents at runtime via the Settings page (Custom Agents section).
 
 ## Architecture Notes
 
-- **State management**: `AppSettings` is a `ChangeNotifier` wrapped in `AppSettingsScope` (`InheritedNotifier`). Access it anywhere with `AppSettingsScope.of(context)` or `AppSettingsScope.stringsOf(context)`. Do not introduce a second state-management library.
+- **State management**: `AppSettings` is a `ChangeNotifier` wrapped in `AppSettingsScope` (`InheritedNotifier`). Access it anywhere with `AppSettingsScope.of(context)` or `AppSettingsScope.stringsOf(context)`. It also owns the custom-agents list (`addCustomAgent`, `removeCustomAgent`, `allAgents`). Do not introduce a second state-management library.
 - **Form state**: All mutable form state (`TextEditingController`s, lists) lives in `_HomePageState` inside `home_page.dart`. `setState` is used directly; no `Provider`/`Riverpod`/`Bloc`.
 - **Markdown generation**: `MarkdownGenerator` is a thin wrapper around `buildProjectTemplate` in `base_template.dart`. If the output format must change, edit `base_template.dart`.
 - **Localisation**: All user-visible strings go through `AppStrings`. Add new strings to both `ptBR` and `en` static instances simultaneously.
