@@ -88,6 +88,14 @@ To add a new built-in agent, append an `AiTarget` entry to the `aiTargets` list 
 
 A final `release` job downloads all three artifacts and attaches them to the GitHub Release using `softprops/action-gh-release`.
 
+Release assets:
+
+| File | Contents |
+|------|----------|
+| `cyberfox-linux.tar.gz` | `bundle/` — executable + `lib/` + `data/` |
+| `cyberfox-windows.zip` | `Release/` — executable + DLLs + `data/` |
+| `cyberfox-macos.zip` | `cyberfox.app` bundle |
+
 To publish a new release: `git tag vX.Y.Z && git push github vX.Y.Z`.
 
 ## Architecture Notes

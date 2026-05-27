@@ -39,11 +39,11 @@ Instead of writing project context files by hand for each AI tool, Cyberfox lets
 
 Pre-built binaries for Linux, Windows and macOS are attached to every [GitHub Release](https://github.com/romulofer/cyberfox/releases):
 
-| Platform | File |
-|----------|------|
-| Linux | `cyberfox-linux` |
-| Windows | `cyberfox-windows.exe` |
-| macOS | `cyberfox-macos` |
+| Platform | File | Contents |
+|----------|------|----------|
+| Linux | `cyberfox-linux.tar.gz` | `bundle/` — executable + `lib/` + `data/` |
+| Windows | `cyberfox-windows.zip` | `Release/` — executable + DLLs + `data/` |
+| macOS | `cyberfox-macos.zip` | `cyberfox.app` bundle |
 
 ### Requirements
 
@@ -129,11 +129,11 @@ Em vez de escrever manualmente arquivos de contexto para cada ferramenta de IA, 
 
 Binários pré-compilados para Linux, Windows e macOS estão disponíveis em cada [GitHub Release](https://github.com/romulofer/cyberfox/releases):
 
-| Plataforma | Arquivo |
-|------------|---------|
-| Linux | `cyberfox-linux` |
-| Windows | `cyberfox-windows.exe` |
-| macOS | `cyberfox-macos` |
+| Plataforma | Arquivo | Conteúdo |
+|------------|---------|----------|
+| Linux | `cyberfox-linux.tar.gz` | `bundle/` — executável + `lib/` + `data/` |
+| Windows | `cyberfox-windows.zip` | `Release/` — executável + DLLs + `data/` |
+| macOS | `cyberfox-macos.zip` | bundle `cyberfox.app` |
 
 ### Requisitos
 
