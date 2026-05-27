@@ -14,18 +14,15 @@ jobs:
         include:
           - os: ubuntu-latest
             build_cmd: flutter build linux --release
-            binary: build/linux/x64/release/bundle/cyberfox
-            asset: cyberfox-linux
+            asset: cyberfox-linux.tar.gz
 
           - os: windows-latest
             build_cmd: flutter build windows --release
-            binary: build/windows/x64/runner/Release/cyberfox.exe
-            asset: cyberfox-windows.exe
+            asset: cyberfox-windows.zip
 
           - os: macos-latest
             build_cmd: flutter build macos --release
-            binary: build/macos/Build/Products/Release/cyberfox.app/Contents/MacOS/cyberfox
-            asset: cyberfox-macos
+            asset: cyberfox-macos.zip
 
     steps:
       - uses: actions/checkout@v4
@@ -42,9 +39,18 @@ jobs:
 
       - run: ${{ matrix.build_cmd }}
 
-      - name: Stage binary
-        shell: bash
-        run: cp "${{ matrix.binary }}" "${{ matrix.asset }}"
+      - name: Package (Linux)
+        if: runner.os == 'Linux'
+        run: tar -czf cyberfox-linux.tar.gz -C build/linux/x64/release bundle/
+
+      - name: Package (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Compress-Archive -Path build/windows/x64/runner/Release -DestinationPath cyberfox-windows.zip
+
+      - name: Package (macOS)
+        if: runner.os == 'macOS'
+        run: cd build/macos/Build/Products/Release && zip -r $GITHUB_WORKSPACE/cyberfox-macos.zip cyberfox.app
 
       - uses: actions/upload-artifact@v4
         with:
