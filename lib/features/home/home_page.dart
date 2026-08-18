@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -10,10 +11,19 @@ import '../../core/l10n/app_strings.dart';
 import '../../core/models/ai_target.dart';
 import '../../core/models/documentation_reference.dart';
 import '../../core/models/project_config.dart';
+import '../../core/models/project_phase.dart';
+import '../../core/models/section_template.dart';
 import '../../core/models/setup_command.dart';
 import '../../core/models/tech_stack_entry.dart';
 import '../../core/settings/app_settings.dart';
 import '../settings/settings_page.dart';
+import '../templates/templates_page.dart';
+import 'widgets/apply_template.dart';
+import 'widgets/doc_refs_editor.dart';
+import 'widgets/phases_editor.dart';
+import 'widgets/setup_commands_editor.dart';
+import 'widgets/string_list_input.dart';
+import 'widgets/tech_stack_editor.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -37,24 +47,13 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // Tech stack
-  final _techCategoryController = TextEditingController();
-  final _techNameController = TextEditingController();
-  final _techVersionController = TextEditingController();
   final List<TechStackEntry> _techStack = [];
-
-  // Setup commands
-  final _commandController = TextEditingController();
-  final _commandDescriptionController = TextEditingController();
   final List<SetupCommand> _setupCommands = [];
   final List<String> _coreFeatures = [];
+  final List<ProjectPhase> _phases = [];
   final List<String> _acceptanceCriteria = [];
+  final List<String> _whatToDo = [];
   final List<String> _whatNotToDo = [];
-
-  // Documentation references
-  final _docTitleController = TextEditingController();
-  final _docUrlController = TextEditingController();
-  final _docDescriptionController = TextEditingController();
   final List<DocumentationReference> _docs = [];
 
   bool _saving = false;
@@ -70,14 +69,6 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     _projectController.dispose();
     _descriptionController.dispose();
-    _techCategoryController.dispose();
-    _techNameController.dispose();
-    _techVersionController.dispose();
-    _commandController.dispose();
-    _commandDescriptionController.dispose();
-    _docTitleController.dispose();
-    _docUrlController.dispose();
-    _docDescriptionController.dispose();
     super.dispose();
   }
 
@@ -89,19 +80,13 @@ class _HomePageState extends State<HomePage> {
       _descriptionController.clear();
       _selectedAi = aiTargets.first;
       _techStack.clear();
-      _techCategoryController.clear();
-      _techNameController.clear();
-      _techVersionController.clear();
       _setupCommands.clear();
-      _commandController.clear();
-      _commandDescriptionController.clear();
       _coreFeatures.clear();
+      _phases.clear();
       _acceptanceCriteria.clear();
+      _whatToDo.clear();
       _whatNotToDo.clear();
       _docs.clear();
-      _docTitleController.clear();
-      _docUrlController.clear();
-      _docDescriptionController.clear();
     });
   }
 
@@ -112,55 +97,41 @@ class _HomePageState extends State<HomePage> {
         techStack: _techStack,
         setupCommands: _setupCommands,
         coreFeatures: _coreFeatures,
+        phases: _phases,
         acceptanceCriteria: _acceptanceCriteria,
+        whatToDo: _whatToDo,
         whatNotToDo: _whatNotToDo,
         documentationReferences: _docs,
       );
 
   String _markdown(AppStrings s) => MarkdownGenerator().generate(_config, s);
 
-  void _addTechEntry() {
-    if (_techCategoryController.text.isEmpty ||
-        _techNameController.text.isEmpty) {
-      return;
-    }
+  void _applyToSection(TemplateSectionKey section, SectionContent content) {
     setState(() {
-      _techStack.add(TechStackEntry(
-        category: _techCategoryController.text.trim(),
-        technology: _techNameController.text.trim(),
-        versionOrNotes: _techVersionController.text.trim(),
-      ));
-      _techCategoryController.clear();
-      _techNameController.clear();
-      _techVersionController.clear();
-    });
-  }
-
-  void _addCommand() {
-    if (_commandController.text.isEmpty) return;
-    setState(() {
-      _setupCommands.add(SetupCommand(
-        command: _commandController.text.trim(),
-        description: _commandDescriptionController.text.trim(),
-      ));
-      _commandController.clear();
-      _commandDescriptionController.clear();
-    });
-  }
-
-  void _addDoc() {
-    if (_docTitleController.text.isEmpty || _docUrlController.text.isEmpty) {
-      return;
-    }
-    setState(() {
-      _docs.add(DocumentationReference(
-        title: _docTitleController.text.trim(),
-        url: _docUrlController.text.trim(),
-        description: _docDescriptionController.text.trim(),
-      ));
-      _docTitleController.clear();
-      _docUrlController.clear();
-      _docDescriptionController.clear();
+      switch (section) {
+        case TemplateSectionKey.description:
+          final addition = content.text ?? '';
+          if (addition.isEmpty) return;
+          _descriptionController.text = _descriptionController.text.isEmpty
+              ? addition
+              : '${_descriptionController.text}\n$addition';
+        case TemplateSectionKey.techStack:
+          _techStack.addAll(content.techStack ?? const []);
+        case TemplateSectionKey.setupCommands:
+          _setupCommands.addAll(content.setupCommands ?? const []);
+        case TemplateSectionKey.coreFeatures:
+          _coreFeatures.addAll(content.strings ?? const []);
+        case TemplateSectionKey.phases:
+          _phases.addAll(content.phases ?? const []);
+        case TemplateSectionKey.acceptanceCriteria:
+          _acceptanceCriteria.addAll(content.strings ?? const []);
+        case TemplateSectionKey.whatToDo:
+          _whatToDo.addAll(content.strings ?? const []);
+        case TemplateSectionKey.whatNotToDo:
+          _whatNotToDo.addAll(content.strings ?? const []);
+        case TemplateSectionKey.documentationReferences:
+          _docs.addAll(content.docs ?? const []);
+      }
     });
   }
 
@@ -224,6 +195,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void _openTemplates() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const TemplatesPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = AppSettingsScope.stringsOf(context);
@@ -249,6 +226,11 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           IconButton(
+            icon: const Icon(Icons.bookmark_border),
+            tooltip: s.templatesLabel,
+            onPressed: _openTemplates,
+          ),
+          IconButton(
             icon: const Icon(Icons.settings_outlined),
             tooltip: s.settingsTitle,
             onPressed: _openSettings,
@@ -256,20 +238,16 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(width: 8),
         ],
       ),
-      body: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(
-            width: 440,
-            child: ColoredBox(
-              color: colorScheme.surfaceContainerLow,
-              child: _buildFormPanel(s),
-            ),
-          ),
-          VerticalDivider(
-              width: 1, thickness: 1, color: colorScheme.outlineVariant),
-          Expanded(child: _buildPreviewPanel(s)),
-        ],
+      body: _ResizableSplit(
+        left: ColoredBox(
+          color: colorScheme.surfaceContainerLow,
+          child: _buildFormPanel(s),
+        ),
+        right: _buildPreviewPanel(s),
+        initialWidth: 440,
+        minLeftWidth: 320,
+        minRightWidth: 320,
+        dividerColor: colorScheme.outlineVariant,
       ),
     );
   }
@@ -292,6 +270,12 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           const SizedBox(height: 12),
+          ApplyTemplate(
+            s: s,
+            section: TemplateSectionKey.description,
+            onApply: (c) =>
+                _applyToSection(TemplateSectionKey.description, c),
+          ),
           TextField(
             controller: _descriptionController,
             maxLines: 4,
@@ -327,92 +311,44 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(height: 28),
           _SectionHeader(s.sectionTechStack),
           const SizedBox(height: 12),
-          TextField(
-            controller: _techCategoryController,
-            decoration: InputDecoration(
-              labelText: s.fieldCategory,
-              hintText: s.hintCategory,
-              border: const OutlineInputBorder(),
-            ),
+          ApplyTemplate(
+            s: s,
+            section: TemplateSectionKey.techStack,
+            onApply: (c) => _applyToSection(TemplateSectionKey.techStack, c),
           ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _techNameController,
-            decoration: InputDecoration(
-              labelText: s.fieldTechnology,
-              hintText: s.hintTechnology,
-              border: const OutlineInputBorder(),
-            ),
+          TechStackEditor(
+            s: s,
+            items: _techStack,
+            onAdd: (e) => setState(() => _techStack.add(e)),
+            onRemove: (e) => setState(() => _techStack.remove(e)),
           ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _techVersionController,
-            onSubmitted: (_) => _addTechEntry(),
-            decoration: InputDecoration(
-              labelText: s.fieldVersionNotes,
-              hintText: s.hintVersionNotes,
-              border: const OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: _addTechEntry,
-              icon: const Icon(Icons.add, size: 18),
-              label: Text(s.add),
-            ),
-          ),
-          if (_techStack.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            ..._techStack.map((e) => _TechEntryTile(
-                  entry: e,
-                  onDelete: () => setState(() => _techStack.remove(e)),
-                )),
-          ],
 
           const SizedBox(height: 28),
           _SectionHeader(s.sectionSetupCommands),
           const SizedBox(height: 12),
-          TextField(
-            controller: _commandController,
-            decoration: InputDecoration(
-              labelText: s.fieldCommand,
-              hintText: s.hintCommand,
-              border: const OutlineInputBorder(),
-            ),
+          ApplyTemplate(
+            s: s,
+            section: TemplateSectionKey.setupCommands,
+            onApply: (c) =>
+                _applyToSection(TemplateSectionKey.setupCommands, c),
           ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _commandDescriptionController,
-            onSubmitted: (_) => _addCommand(),
-            decoration: InputDecoration(
-              labelText: s.fieldCommandDescription,
-              hintText: s.hintCommandDescription,
-              border: const OutlineInputBorder(),
-            ),
+          SetupCommandsEditor(
+            s: s,
+            items: _setupCommands,
+            onAdd: (e) => setState(() => _setupCommands.add(e)),
+            onRemove: (e) => setState(() => _setupCommands.remove(e)),
           ),
-          const SizedBox(height: 8),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: _addCommand,
-              icon: const Icon(Icons.add, size: 18),
-              label: Text(s.add),
-            ),
-          ),
-          if (_setupCommands.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            ..._setupCommands.map((cmd) => _SetupCommandTile(
-                  command: cmd,
-                  onDelete: () => setState(() => _setupCommands.remove(cmd)),
-                )),
-          ],
 
           const SizedBox(height: 28),
           _SectionHeader(s.sectionCoreFeatures),
           const SizedBox(height: 12),
-          _StringListInput(
+          ApplyTemplate(
+            s: s,
+            section: TemplateSectionKey.coreFeatures,
+            onApply: (c) =>
+                _applyToSection(TemplateSectionKey.coreFeatures, c),
+          ),
+          StringListInput(
             label: s.fieldFeature,
             hint: s.hintFeature,
             items: _coreFeatures,
@@ -422,9 +358,30 @@ class _HomePageState extends State<HomePage> {
           ),
 
           const SizedBox(height: 28),
+          _SectionHeader(s.sectionPhases),
+          const SizedBox(height: 12),
+          ApplyTemplate(
+            s: s,
+            section: TemplateSectionKey.phases,
+            onApply: (c) => _applyToSection(TemplateSectionKey.phases, c),
+          ),
+          PhasesEditor(
+            s: s,
+            items: _phases,
+            onAdd: (p) => setState(() => _phases.add(p)),
+            onRemove: (p) => setState(() => _phases.remove(p)),
+          ),
+
+          const SizedBox(height: 28),
           _SectionHeader(s.sectionAcceptanceCriteria),
           const SizedBox(height: 12),
-          _StringListInput(
+          ApplyTemplate(
+            s: s,
+            section: TemplateSectionKey.acceptanceCriteria,
+            onApply: (c) =>
+                _applyToSection(TemplateSectionKey.acceptanceCriteria, c),
+          ),
+          StringListInput(
             label: s.fieldCriterion,
             hint: s.hintCriterion,
             items: _acceptanceCriteria,
@@ -434,9 +391,32 @@ class _HomePageState extends State<HomePage> {
           ),
 
           const SizedBox(height: 28),
+          _SectionHeader(s.sectionWhatToDo),
+          const SizedBox(height: 12),
+          ApplyTemplate(
+            s: s,
+            section: TemplateSectionKey.whatToDo,
+            onApply: (c) => _applyToSection(TemplateSectionKey.whatToDo, c),
+          ),
+          StringListInput(
+            label: s.fieldGuideline,
+            hint: s.hintGuideline,
+            items: _whatToDo,
+            addLabel: s.add,
+            onAdd: (v) => setState(() => _whatToDo.add(v)),
+            onRemove: (v) => setState(() => _whatToDo.remove(v)),
+          ),
+
+          const SizedBox(height: 28),
           _SectionHeader(s.sectionWhatNotToDo),
           const SizedBox(height: 12),
-          _StringListInput(
+          ApplyTemplate(
+            s: s,
+            section: TemplateSectionKey.whatNotToDo,
+            onApply: (c) =>
+                _applyToSection(TemplateSectionKey.whatNotToDo, c),
+          ),
+          StringListInput(
             label: s.fieldProhibition,
             hint: s.hintProhibition,
             items: _whatNotToDo,
@@ -448,46 +428,18 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(height: 28),
           _SectionHeader(s.sectionDocRefs),
           const SizedBox(height: 12),
-          TextField(
-            controller: _docTitleController,
-            decoration: InputDecoration(
-              labelText: s.fieldDocTitle,
-              border: const OutlineInputBorder(),
-            ),
+          ApplyTemplate(
+            s: s,
+            section: TemplateSectionKey.documentationReferences,
+            onApply: (c) => _applyToSection(
+                TemplateSectionKey.documentationReferences, c),
           ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _docUrlController,
-            decoration: InputDecoration(
-              labelText: s.fieldDocUrl,
-              border: const OutlineInputBorder(),
-            ),
+          DocRefsEditor(
+            s: s,
+            items: _docs,
+            onAdd: (d) => setState(() => _docs.add(d)),
+            onRemove: (d) => setState(() => _docs.remove(d)),
           ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _docDescriptionController,
-            onSubmitted: (_) => _addDoc(),
-            decoration: InputDecoration(
-              labelText: s.fieldDocDescriptionOptional,
-              border: const OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: _addDoc,
-              icon: const Icon(Icons.add, size: 18),
-              label: Text(s.add),
-            ),
-          ),
-          if (_docs.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            ..._docs.map((doc) => _DocTile(
-                  doc: doc,
-                  onDelete: () => setState(() => _docs.remove(doc)),
-                )),
-          ],
 
           const SizedBox(height: 24),
         ],
@@ -515,7 +467,74 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-// ── Shared widgets ────────────────────────────────────────────────────────────
+/// A left/right split with a draggable divider. The drag state lives in its
+/// own [State], separate from [HomePage]'s, so dragging only resizes the
+/// [SizedBox] around the already-built [left]/[right] widgets instead of
+/// rebuilding them (which would re-run markdown generation every frame).
+class _ResizableSplit extends StatefulWidget {
+  final Widget left;
+  final Widget right;
+  final double initialWidth;
+  final double minLeftWidth;
+  final double minRightWidth;
+  final Color dividerColor;
+
+  const _ResizableSplit({
+    required this.left,
+    required this.right,
+    required this.initialWidth,
+    required this.minLeftWidth,
+    required this.minRightWidth,
+    required this.dividerColor,
+  });
+
+  @override
+  State<_ResizableSplit> createState() => _ResizableSplitState();
+}
+
+class _ResizableSplitState extends State<_ResizableSplit> {
+  late double _width = widget.initialWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth = math.max(
+          widget.minLeftWidth,
+          constraints.maxWidth - widget.minRightWidth,
+        );
+        final width = _width.clamp(widget.minLeftWidth, maxWidth);
+
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(width: width, child: widget.left),
+            MouseRegion(
+              cursor: SystemMouseCursors.resizeColumn,
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onHorizontalDragUpdate: (details) {
+                  setState(() {
+                    _width = (width + details.delta.dx)
+                        .clamp(widget.minLeftWidth, maxWidth);
+                  });
+                },
+                child: SizedBox(
+                  width: 8,
+                  child: Center(
+                    child: VerticalDivider(
+                        width: 1, thickness: 1, color: widget.dividerColor),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(child: widget.right),
+          ],
+        );
+      },
+    );
+  }
+}
 
 class _SectionHeader extends StatelessWidget {
   final String title;
@@ -529,196 +548,6 @@ class _SectionHeader extends StatelessWidget {
           .textTheme
           .labelLarge
           ?.copyWith(fontWeight: FontWeight.bold),
-    );
-  }
-}
-
-class _StringListInput extends StatefulWidget {
-  final String label;
-  final String hint;
-  final String addLabel;
-  final List<String> items;
-  final void Function(String) onAdd;
-  final void Function(String) onRemove;
-
-  const _StringListInput({
-    required this.label,
-    required this.hint,
-    required this.addLabel,
-    required this.items,
-    required this.onAdd,
-    required this.onRemove,
-  });
-
-  @override
-  State<_StringListInput> createState() => _StringListInputState();
-}
-
-class _StringListInputState extends State<_StringListInput> {
-  final _controller = TextEditingController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _submit() {
-    final text = _controller.text.trim();
-    if (text.isEmpty) return;
-    widget.onAdd(text);
-    _controller.clear();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _controller,
-                onSubmitted: (_) => _submit(),
-                decoration: InputDecoration(
-                  labelText: widget.label,
-                  hintText: widget.hint,
-                  border: const OutlineInputBorder(),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            IconButton.outlined(
-              onPressed: _submit,
-              icon: const Icon(Icons.add, size: 18),
-              tooltip: widget.addLabel,
-            ),
-          ],
-        ),
-        if (widget.items.isNotEmpty) ...[
-          const SizedBox(height: 8),
-          ...widget.items.map((item) => Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: colorScheme.outlineVariant),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: ListTile(
-                    dense: true,
-                    title: Text(item, style: const TextStyle(fontSize: 13)),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.close, size: 16),
-                      onPressed: () => widget.onRemove(item),
-                    ),
-                  ),
-                ),
-              )),
-        ],
-      ],
-    );
-  }
-}
-
-class _SetupCommandTile extends StatelessWidget {
-  final SetupCommand command;
-  final VoidCallback onDelete;
-
-  const _SetupCommandTile({required this.command, required this.onDelete});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border.all(color: colorScheme.outlineVariant),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: ListTile(
-          dense: true,
-          title: Text(command.command, style: const TextStyle(fontSize: 13)),
-          subtitle: command.description.isNotEmpty
-              ? Text(command.description, style: const TextStyle(fontSize: 11))
-              : null,
-          trailing: IconButton(
-            icon: const Icon(Icons.close, size: 16),
-            onPressed: onDelete,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _TechEntryTile extends StatelessWidget {
-  final TechStackEntry entry;
-  final VoidCallback onDelete;
-
-  const _TechEntryTile({required this.entry, required this.onDelete});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border.all(color: colorScheme.outlineVariant),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: ListTile(
-          dense: true,
-          title: Text('${entry.category}  ·  ${entry.technology}',
-              style: const TextStyle(fontSize: 13)),
-          subtitle: entry.versionOrNotes.isNotEmpty
-              ? Text(entry.versionOrNotes, style: const TextStyle(fontSize: 11))
-              : null,
-          trailing: IconButton(
-            icon: const Icon(Icons.close, size: 16),
-            onPressed: onDelete,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _DocTile extends StatelessWidget {
-  final DocumentationReference doc;
-  final VoidCallback onDelete;
-
-  const _DocTile({required this.doc, required this.onDelete});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border.all(color: colorScheme.outlineVariant),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: ListTile(
-          dense: true,
-          title: Text(doc.title, style: const TextStyle(fontSize: 13)),
-          subtitle: Text(doc.url,
-              style: const TextStyle(fontSize: 11),
-              overflow: TextOverflow.ellipsis),
-          trailing: IconButton(
-            icon: const Icon(Icons.close, size: 16),
-            onPressed: onDelete,
-          ),
-        ),
-      ),
     );
   }
 }

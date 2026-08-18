@@ -4,7 +4,15 @@
       "Bash(flutter analyze *)",
       "Bash(flutter pub *)",
       "Bash(flutter --version)",
-      "Bash(flutter test *)"
+      "Bash(flutter test *)",
+      "Bash(flutter devices *)",
+      "Bash(fvm list *)",
+      "Bash(flutter channel *)",
+      "Bash(flutter upgrade *)",
+      "Bash(git -C /home/romulo2/development/flutter checkout -- pubspec.lock)",
+      "Bash(git -C /home/romulo2/development/flutter status --short)",
+      "Bash(flutter build *)",
+      "Bash(flutter run *)"
     ]
   }
 }

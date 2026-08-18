@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter/widgets.dart';
 
 import '../l10n/app_strings.dart';
@@ -5,11 +6,28 @@ import '../models/ai_target.dart';
 
 enum AppLanguage { ptBR, en }
 
+enum AppThemeMode { system, light, dark }
+
 class AppSettings extends ChangeNotifier {
   AppLanguage _language = AppLanguage.ptBR;
+  AppThemeMode _themeMode = AppThemeMode.system;
   final List<AiTarget> _customAgents = [];
 
   AppLanguage get language => _language;
+
+  AppThemeMode get themeMode => _themeMode;
+
+  ThemeMode get flutterThemeMode => switch (_themeMode) {
+        AppThemeMode.system => ThemeMode.system,
+        AppThemeMode.light => ThemeMode.light,
+        AppThemeMode.dark => ThemeMode.dark,
+      };
+
+  void setThemeMode(AppThemeMode mode) {
+    if (_themeMode == mode) return;
+    _themeMode = mode;
+    notifyListeners();
+  }
 
   List<AiTarget> get customAgents => List.unmodifiable(_customAgents);
 

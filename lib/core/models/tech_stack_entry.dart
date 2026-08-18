@@ -8,4 +8,16 @@ class TechStackEntry {
     required this.technology,
     this.versionOrNotes = '',
   });
+
+  Map<String, dynamic> toJson() => {
+        'category': category,
+        'technology': technology,
+        'versionOrNotes': versionOrNotes,
+      };
+
+  factory TechStackEntry.fromJson(Map<String, dynamic> json) => TechStackEntry(
+        category: json['category'] as String? ?? '',
+        technology: json['technology'] as String? ?? '',
+        versionOrNotes: json['versionOrNotes'] as String? ?? '',
+      );
 }

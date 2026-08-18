@@ -6,4 +6,14 @@ class SetupCommand {
     required this.command,
     this.description = '',
   });
+
+  Map<String, dynamic> toJson() => {
+        'command': command,
+        'description': description,
+      };
+
+  factory SetupCommand.fromJson(Map<String, dynamic> json) => SetupCommand(
+        command: json['command'] as String? ?? '',
+        description: json['description'] as String? ?? '',
+      );
 }

@@ -42,12 +42,43 @@ String buildProjectTemplate(ProjectConfig config, AppStrings s) {
     }
   }
 
+  if (config.phases.isNotEmpty) {
+    b.writeln();
+    b.writeln('## ${s.mdPhases}');
+    b.writeln();
+    for (var i = 0; i < config.phases.length; i++) {
+      final phase = config.phases[i];
+      if (i > 0) b.writeln();
+      final heading = phase.name.isNotEmpty
+          ? '${s.mdPhaseLabel} ${i + 1}: ${phase.name}'
+          : '${s.mdPhaseLabel} ${i + 1}';
+      b.writeln('### $heading');
+      b.writeln();
+      if (phase.description.isNotEmpty) {
+        b.writeln(phase.description);
+        b.writeln();
+      }
+      for (final task in phase.tasks) {
+        b.writeln('- $task');
+      }
+    }
+  }
+
   if (config.acceptanceCriteria.isNotEmpty) {
     b.writeln();
     b.writeln('## ${s.mdAcceptanceCriteria}');
     b.writeln();
     for (final c in config.acceptanceCriteria) {
       b.writeln('- $c');
+    }
+  }
+
+  if (config.whatToDo.isNotEmpty) {
+    b.writeln();
+    b.writeln('## ${s.mdWhatToDo}');
+    b.writeln();
+    for (final g in config.whatToDo) {
+      b.writeln('- $g');
     }
   }
 

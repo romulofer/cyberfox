@@ -82,6 +82,49 @@ class _SettingsPageState extends State<SettingsPage> {
 
               const SizedBox(height: 28),
 
+              // ── Theme ───────────────────────────────────────────────────
+              Text(
+                s.settingsTheme,
+                style: Theme.of(context)
+                    .textTheme
+                    .labelLarge
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Card(
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(color: colorScheme.outlineVariant),
+                ),
+                child: RadioGroup<AppThemeMode>(
+                  groupValue: settings.themeMode,
+                  onChanged: (v) {
+                    if (v != null) settings.setThemeMode(v);
+                  },
+                  child: Column(
+                    children: [
+                      RadioListTile<AppThemeMode>(
+                        title: Text(s.themeSystem),
+                        value: AppThemeMode.system,
+                      ),
+                      Divider(height: 1, color: colorScheme.outlineVariant),
+                      RadioListTile<AppThemeMode>(
+                        title: Text(s.themeLight),
+                        value: AppThemeMode.light,
+                      ),
+                      Divider(height: 1, color: colorScheme.outlineVariant),
+                      RadioListTile<AppThemeMode>(
+                        title: Text(s.themeDark),
+                        value: AppThemeMode.dark,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 28),
+
               // ── Custom Agents ────────────────────────────────────────────
               Text(
                 s.sectionCustomAgents,

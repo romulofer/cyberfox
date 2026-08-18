@@ -3,6 +3,7 @@ import 'package:cyberfox/core/l10n/app_strings.dart';
 import 'package:cyberfox/core/models/ai_target.dart';
 import 'package:cyberfox/core/models/documentation_reference.dart';
 import 'package:cyberfox/core/models/project_config.dart';
+import 'package:cyberfox/core/models/project_phase.dart';
 import 'package:cyberfox/core/models/setup_command.dart';
 import 'package:cyberfox/core/models/tech_stack_entry.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,7 +14,9 @@ ProjectConfig _config({
   List<TechStackEntry> techStack = const [],
   List<SetupCommand> setupCommands = const [],
   List<String> coreFeatures = const [],
+  List<ProjectPhase> phases = const [],
   List<String> acceptanceCriteria = const [],
+  List<String> whatToDo = const [],
   List<String> whatNotToDo = const [],
   List<DocumentationReference> documentationReferences = const [],
 }) =>
@@ -24,7 +27,9 @@ ProjectConfig _config({
       techStack: techStack,
       setupCommands: setupCommands,
       coreFeatures: coreFeatures,
+      phases: phases,
       acceptanceCriteria: acceptanceCriteria,
+      whatToDo: whatToDo,
       whatNotToDo: whatNotToDo,
       documentationReferences: documentationReferences,
     );
@@ -131,6 +136,17 @@ void main() {
       expect(out, isNot(contains('## Core Features')));
     });
 
+    test('what to do section present when non-empty', () {
+      final out = gen.generate(_config(whatToDo: ['Validate all input']), AppStrings.en);
+      expect(out, contains('## What To Do'));
+      expect(out, contains('- Validate all input'));
+    });
+
+    test('what to do section absent when empty', () {
+      final out = gen.generate(_config(), AppStrings.en);
+      expect(out, isNot(contains('## What To Do')));
+    });
+
     test('acceptance criteria section present when non-empty', () {
       final out = gen.generate(_config(acceptanceCriteria: ['Tests pass']), AppStrings.en);
       expect(out, contains('## Acceptance Criteria'));
@@ -161,6 +177,47 @@ void main() {
       expect(out, contains('- Feature A'));
       expect(out, contains('- Feature B'));
       expect(out, contains('- Feature C'));
+    });
+  });
+
+  group('phases', () {
+    test('section present when non-empty', () {
+      final out = gen.generate(
+        _config(phases: [
+          const ProjectPhase(name: 'MVP', description: 'Ship the basics', tasks: ['Set up CI']),
+        ]),
+        AppStrings.en,
+      );
+      expect(out, contains('## Project Phases'));
+      expect(out, contains('### Phase 1: MVP'));
+      expect(out, contains('Ship the basics'));
+      expect(out, contains('- Set up CI'));
+    });
+
+    test('section absent when empty', () {
+      final out = gen.generate(_config(), AppStrings.en);
+      expect(out, isNot(contains('## Project Phases')));
+    });
+
+    test('unnamed phase falls back to numeric label', () {
+      final out = gen.generate(
+        _config(phases: [const ProjectPhase()]),
+        AppStrings.en,
+      );
+      expect(out, contains('### Phase 1'));
+      expect(out, isNot(contains('### Phase 1:')));
+    });
+
+    test('multiple phases are numbered in order', () {
+      final out = gen.generate(
+        _config(phases: [
+          const ProjectPhase(name: 'MVP'),
+          const ProjectPhase(name: 'Beta'),
+        ]),
+        AppStrings.en,
+      );
+      expect(out, contains('### Phase 1: MVP'));
+      expect(out, contains('### Phase 2: Beta'));
     });
   });
 
