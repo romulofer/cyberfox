@@ -87,6 +87,20 @@ if(PLUGIN_BUNDLED_LIBRARIES)
     COMPONENT Runtime)
 endif()
 
+# Bundle the MSVC runtime DLLs (MSVCP140.dll, VCRUNTIME140.dll,
+# VCRUNTIME140_1.dll) next to the executable. Without this, the app fails to
+# start on a clean Windows 10 install that doesn't already have the Visual
+# C++ Redistributable — these DLLs aren't part of the OS and are pulled in
+# by the runner and every native plugin. Windows 7/8 are out of scope
+# (Flutter only supports Windows 10+).
+set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
+include(InstallRequiredSystemLibraries)
+if(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS)
+  install(FILES ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+    DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+    COMPONENT Runtime)
+endif()
+
 # Copy the native assets provided by the build.dart from all packages.
 set(NATIVE_ASSETS_DIR "${PROJECT_BUILD_DIR}native_assets/windows/")
 install(DIRECTORY "${NATIVE_ASSETS_DIR}"
